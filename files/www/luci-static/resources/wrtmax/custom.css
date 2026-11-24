@@ -1,0 +1,27 @@
+/* WrtMax responsive LuCI branding */
+:root { --wm-accent:#5368dc; }
+body { -webkit-text-size-adjust:100%; }
+header .brand, .main > header { background:#111936; }
+header .brand:before {
+  content:""; display:inline-block; width:34px; height:34px;
+  margin-right:10px; vertical-align:middle;
+  background:url('/luci-static/resources/wrtmax/logo.svg') center/contain no-repeat;
+}
+a, button, input, select { touch-action:manipulation; }
+button, .cbi-button, input[type=submit] { min-height:42px; }
+table { width:100%; }
+@media (max-width:767px) {
+  .container, .main .container { width:100%; padding-left:10px; padding-right:10px; }
+  .cbi-map, .cbi-section, .alert-message { border-radius:10px; }
+  .cbi-section { padding:10px; }
+  table { display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  td, th { padding:9px 7px; white-space:nowrap; }
+  input, select, textarea { max-width:100%; min-height:44px; font-size:16px; }
+  .btn, button, .cbi-button { min-height:46px; }
+  .wm-grid { display:grid; grid-template-columns:1fr; gap:10px; }
+}
+@media (min-width:768px) {
+  .wm-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+}
+.wm-card { padding:16px; border-radius:12px; background:var(--background-color-high,#fff); }
+.wm-footer:after { content:"WrtMax Firmware Solutions • Support: 776 538 297"; display:block; text-align:center; padding:12px; }

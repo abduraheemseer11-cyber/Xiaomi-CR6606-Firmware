@@ -1,0 +1,24 @@
+#!/bin/sh
+set -eu
+case "${1:-status}" in
+status)
+ for p in wan lan1 lan2 lan3; do
+  echo "=== $p ==="
+  if [ -d "/sys/class/net/$p" ]; then ip -br link show "$p" 2>/dev/null || true; ethtool "$p" 2>/dev/null | grep -E 'Speed:|Duplex:|Link detected:' || true; bridge vlan show dev "$p" 2>/dev/null || true
+  else echo "Interface not present"; fi
+ done ;;
+merge)
+ br="$(uci -q get network.lan.device || echo br-lan)"
+ [ "$br" = br-lan ] || { echo "Unexpected LAN bridge $br"; exit 1; }
+ devsec="$(uci show network | sed -n "s/^\(network\.@device\[[0-9][0-9]*\]\)\.name='br-lan'$/\1/p" | head -n1)"
+ [ -n "$devsec" ] || { echo "br-lan device section not found; refusing blind change"; exit 1; }
+ uci add_list "$devsec".ports='wan'; uci commit network
+ echo "WAN added to br-lan; reload networking from local access." ;;
+vlan)
+ p="${2:-}"; vid="${3:-}"
+ case "$p" in wan|lan1|lan2|lan3) ;; *) exit 2 ;; esac
+ case "$vid" in ''|*[!0-9]*) exit 2 ;; esac
+ [ "$vid" -ge 1 ] && [ "$vid" -le 4094 ] || exit 2
+ bridge vlan add dev "$p" vid "$vid"; echo "VLAN $vid added to $p (runtime; persist in network config)." ;;
+*) echo "Usage: wrtmax-ports {status|merge|vlan PORT VID}"; exit 2 ;;
+esac

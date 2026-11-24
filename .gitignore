@@ -1,0 +1,11 @@
+/openwrt/
+/bin/
+/build_dir/
+/staging_dir/
+/dl/
+*.log
+*.tmp
+__pycache__/
+*.pyc
+.DS_Store
+WrtMax-CR6606-Repo.zip

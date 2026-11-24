@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+case "${1:-status}" in
+ status) echo "WrtMax Firmware Solutions"; echo "Support: 776 538 297"; echo "Version: $(cat /etc/wrtmax_version 2>/dev/null || echo 1.0.0)" ;;
+ *) echo "Usage: wrtmax-branding status"; exit 2 ;;
+esac

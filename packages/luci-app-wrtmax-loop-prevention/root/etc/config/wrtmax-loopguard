@@ -1,0 +1,3 @@
+config loopguard 'main'
+ option threshold '1500'
+ option recovery '60'

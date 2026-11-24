@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+THRESHOLD="$(uci -q get wrtmax-loopguard.main.threshold || echo 1500)"
+RECOVERY="$(uci -q get wrtmax-loopguard.main.recovery || echo 60)"
+LOG=/tmp/wrtmax-loopguard.log
+PORTS="lan1 lan2 lan3 wan"
+while :; do
+ for p in $PORTS; do
+  base="/sys/class/net/$p/statistics"
+  [ -r "$base/rx_packets" ] || continue
+  before="$(cat "$base/rx_packets")"; sleep 1; after="$(cat "$base/rx_packets")"
+  delta=$((after-before))
+  if [ "$delta" -gt "$THRESHOLD" ]; then
+   printf '%s port=%s rx_pps=%s action=down\n' "$(date)" "$p" "$delta" >> "$LOG"
+   ip link set dev "$p" down
+   sleep "$RECOVERY"
+   ip link set dev "$p" up
+   printf '%s port=%s action=recovered\n' "$(date)" "$p" >> "$LOG"
+  fi
+ done
+ sleep 1
+done

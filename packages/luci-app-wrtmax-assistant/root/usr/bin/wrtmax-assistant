@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+case "${1:-diagnose}" in
+diagnose)
+ echo '[Internet]'; ping -c 1 -W 3 1.1.1.1 >/dev/null 2>&1 && echo PASS || echo FAIL
+ echo '[DNS]'; nslookup openwrt.org >/dev/null 2>&1 && echo PASS || echo FAIL
+ echo '[DHCP]'; /etc/init.d/dnsmasq running >/dev/null 2>&1 && echo running || echo not-running
+ echo '[Wireless]'; ubus call network.wireless status 2>/dev/null || true
+ echo '[Flow offload]'; uci -q show firewall | grep flow_offloading || true
+ echo '[NTP]'; logread 2>/dev/null | grep -i ntp | tail -n 5 || true
+ echo '[Overlay]'; df -h /overlay
+ echo '[Wi-Fi chip temperature]'; found=0
+ for f in /sys/class/hwmon/hwmon*/temp1_input; do [ -r "$f" ] || continue; awk -v t="$(cat "$f")" 'BEGIN{printf "%.1f C\n",t/1000}'; found=1; done
+ [ "$found" -eq 1 ] || echo unavailable ;;
+fix)
+ uci set firewall.@defaults[0].flow_offloading='1'; uci commit firewall; /etc/init.d/firewall reload
+ [ ! -x /etc/init.d/sysntpd ] || /etc/init.d/sysntpd restart
+ echo "Safe repairs applied; WAN credentials and LAN address unchanged." ;;
+status) echo "Run diagnose for checks." ;;
+*) echo "Usage: wrtmax-assistant {diagnose|fix|status}"; exit 2 ;;
+esac
