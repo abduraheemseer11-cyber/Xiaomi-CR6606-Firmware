@@ -1,8 +1,0 @@
-#!/bin/sh
-set -eu
-case "${1:-status}" in
-status) cat /tmp/wrtmax-loopguard.log 2>/dev/null || echo "No loop events." ;;
-enable) uci set network.@device[0].stp='1'; uci set network.@device[0].igmp_snooping='1'; uci commit network; /etc/init.d/wrtmax-loopguard enable; /etc/init.d/wrtmax-loopguard restart; echo enabled ;;
-disable) /etc/init.d/wrtmax-loopguard stop; /etc/init.d/wrtmax-loopguard disable; echo disabled ;;
-*) echo "Usage: wrtmax-loop-prevention {status|enable|disable}"; exit 2 ;;
-esac
