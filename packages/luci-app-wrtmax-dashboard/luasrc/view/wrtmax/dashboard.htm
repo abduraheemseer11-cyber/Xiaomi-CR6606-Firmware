@@ -1,0 +1,26 @@
+<%+header%>
+<style>
+.wm-card{padding:16px;margin:12px 0;border-radius:12px;background:var(--background-color-high)}
+.wm-card button,.wm-card input,.wm-card select{width:100%;min-height:44px;margin:6px 0;padding:9px}
+.wm-output{white-space:pre-wrap;overflow-wrap:anywhere;max-height:55vh;overflow:auto}
+</style>
+<h2>WrtMax Dashboard</h2>
+<div class="wm-card"><h3>Status</h3><pre class="wm-output"><%=pcdata(status or "")%></pre>
+<form method="post"><button name="action" value="status">Refresh dashboard</button>
+<div class="wm-grid">
+<a href="/cgi-bin/luci/admin/wrtmax/wifi-analyzer">Wi-Fi Analyzer</a>
+<a href="/cgi-bin/luci/admin/wrtmax/cpu-manager">CPU Manager</a>
+<a href="/cgi-bin/luci/admin/wrtmax/quick-setup">Quick Setup</a>
+<a href="/cgi-bin/luci/admin/wrtmax/client-manager">Client Manager</a>
+<a href="/cgi-bin/luci/admin/wrtmax/security">Security</a>
+<a href="/cgi-bin/luci/admin/wrtmax/ota">OTA</a>
+<a href="/cgi-bin/luci/admin/wrtmax/ports">Port Manager</a>
+<a href="/cgi-bin/luci/admin/wrtmax/backup">Backup</a>
+<a href="/cgi-bin/luci/admin/wrtmax/assistant">Assistant</a>
+<a href="/cgi-bin/luci/admin/wrtmax/speedtest">Speedtest</a>
+<a href="/cgi-bin/luci/admin/wrtmax/driver-control">Driver Control</a>
+<a href="/cgi-bin/luci/admin/wrtmax/loop-prevention">Loop Prevention</a>
+</div></form></div>
+<% if result and result ~= "" then %>
+<div class="wm-card"><h3>Result</h3><pre class="wm-output"><%=pcdata(result)%></pre></div><% end %>
+<%+footer%>

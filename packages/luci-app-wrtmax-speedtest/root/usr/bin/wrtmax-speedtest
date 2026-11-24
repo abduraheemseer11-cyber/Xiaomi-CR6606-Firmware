@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+mode="${1:-}"; server="${2:-}"
+case "$server" in ''|*[!A-Za-z0-9.-]*) echo "Invalid server"; exit 2 ;; esac
+case "$mode" in
+iperf) iperf3 -c "$server" -t 10 -J | jsonfilter -e '@.end.sum_received.bits_per_second' | awk '{printf "Throughput: %.2f Mbps\n",$1/1000000}' ;;
+http) echo "Ping:"; ping -c 4 -W 3 "$server" || true; echo "HTTP download:"; curl -fLsS --max-time 120 -o /dev/null -w 'Mbps: %{speed_download}\nTTFB: %{time_starttransfer}s\n' "https://$server/" ;;
+*) echo "Usage: wrtmax-speedtest {iperf|http} SERVER"; exit 2 ;;
+esac

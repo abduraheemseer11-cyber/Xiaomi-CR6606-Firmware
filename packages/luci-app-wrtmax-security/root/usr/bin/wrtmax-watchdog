@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+LOG=/tmp/wrtmax-security.log
+scan() {
+ echo "Scan $(date)" >> "$LOG"
+ ip neigh show >> "$LOG" 2>/dev/null || true
+ echo "DHCP rogue-server detection requires packet capture support; no server is declared rogue from neighbor data alone." >> "$LOG"
+}
+case "${1:-status}" in
+status) [ -f "$LOG" ] && tail -n 60 "$LOG" || echo "No events." ;;
+scan) scan; tail -n 60 "$LOG" ;;
+daemon) while :; do scan; sleep 60; done ;;
+*) echo "Usage: wrtmax-watchdog {status|scan|daemon}"; exit 2 ;;
+esac

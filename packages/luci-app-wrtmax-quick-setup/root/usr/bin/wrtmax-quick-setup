@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+case "${1:-status}" in
+apply)
+ mode="${2:-}"
+ case "$mode" in
+  ap|bridge) uci set network.lan.proto='static' ;;
+  router-dhcp) uci set network.wan.proto='dhcp' ;;
+  wisp|router-pppoe) echo "This mode requires upstream SSID/security or PPPoE credentials; configure those in LuCI first."; exit 2 ;;
+  *) echo "Invalid mode"; exit 2 ;;
+ esac
+ uci commit network
+ /sbin/reload_config
+ echo "$mode preset saved. Review firewall and bridge membership." ;;
+status) echo "Modes: ap, wisp, router-dhcp, router-pppoe, bridge" ;;
+*) echo "Usage: wrtmax-quick-setup apply MODE"; exit 2 ;;
+esac

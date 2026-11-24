@@ -1,0 +1,2 @@
+config main 'main'
+ option url 'https://ota.wrtmax.local/cr6606/latest.json'
